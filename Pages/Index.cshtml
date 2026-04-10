@@ -1,0 +1,270 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "LinkSnap — Premium URL Shortener";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <meta name="description" content="Shorten, track, and manage your URLs with LinkSnap. Fast, reliable, and beautifully crafted." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <span class="logo-icon">⚡</span>
+                <span class="logo-text">LinkSnap</span>
+            </a>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#stats">Stats</a>
+                <a href="#pricing">Pricing</a>
+                <button class="btn btn-outline btn-sm">Sign In</button>
+            </div>
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="#features">Features</a>
+            <a href="#stats">Stats</a>
+            <a href="#pricing">Pricing</a>
+            <button class="btn btn-outline btn-sm">Sign In</button>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-glow"></div>
+        <div class="container">
+            <div class="badge animate-fade-in">✨ Trusted by 50,000+ creators</div>
+            <h1 class="hero-title animate-fade-in delay-1">
+                Shorten. Share.<br /><span class="gradient-text">Dominate.</span>
+            </h1>
+            <p class="hero-subtitle animate-fade-in delay-2">
+                Transform long, ugly URLs into powerful short links. Track clicks,
+                analyze performance, and own your brand — all in one place.
+            </p>
+
+            <!-- SHORTENER CARD -->
+            <div class="shortener-card animate-fade-in delay-3">
+                <form id="shortenForm" class="shortener-form">
+                    <div class="input-wrapper">
+                        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                        </svg>
+                        <input type="url" id="urlInput" class="url-input"
+                               placeholder="Paste your long URL here..."
+                               required autocomplete="off" />
+                    </div>
+                    <div class="alias-row">
+                        <div class="input-wrapper alias-wrapper">
+                            <span class="alias-prefix">linksnap.io/</span>
+                            <input type="text" id="aliasInput" class="alias-input"
+                                   placeholder="custom-alias (optional)"
+                                   maxlength="30" pattern="[a-zA-Z0-9\-_]+" />
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-shorten" id="shortenBtn">
+                            <span class="btn-text">Shorten URL</span>
+                            <span class="btn-loader" hidden>
+                                <span class="spinner"></span>
+                            </span>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- RESULT -->
+                <div class="result-container" id="resultContainer" hidden>
+                    <div class="result-card">
+                        <div class="result-header">
+                            <span class="result-badge">🎉 Link Created!</span>
+                        </div>
+                        <div class="result-body">
+                            <div class="result-url-row">
+                                <a href="#" id="shortUrlLink" class="short-url" target="_blank" rel="noopener"></a>
+                                <button class="btn btn-icon" id="copyBtn" title="Copy to clipboard">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <p class="original-url" id="originalUrl"></p>
+                        </div>
+                        <div class="result-footer">
+                            <button class="btn btn-ghost" id="qrBtn">📱 QR Code</button>
+                            <button class="btn btn-ghost" id="newLinkBtn">+ New Link</button>
+                        </div>
+                    </div>
+                    <!-- QR Modal -->
+                    <div class="qr-modal" id="qrModal" hidden>
+                        <div class="qr-content">
+                            <canvas id="qrCanvas" width="200" height="200"></canvas>
+                            <p class="qr-label">Scan to open your link</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RECENT LINKS -->
+            <div class="recent-links animate-fade-in delay-4" id="recentLinksSection" hidden>
+                <h3 class="section-label">Recent Links</h3>
+                <div class="links-table" id="linksTable"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title">Why <span class="gradient-text">LinkSnap</span>?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🚀</div>
+                    <h3>Lightning Fast</h3>
+                    <p>Links redirect in under 10ms. Global CDN ensures speed everywhere.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Deep Analytics</h3>
+                    <p>Track clicks, locations, devices, and referrers in real-time.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎨</div>
+                    <h3>Custom Branding</h3>
+                    <p>Use your own domain and customize link previews.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Enterprise Security</h3>
+                    <p>SSL encryption, password-protected links, and expiry controls.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3>QR Codes</h3>
+                    <p>Auto-generated QR codes for every link. Download in PNG or SVG.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔗</div>
+                    <h3>API Access</h3>
+                    <p>RESTful API with SDKs for Node, Python, Go, and more.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- STATS -->
+    <section class="stats" id="stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-number" data-target="2500000">0</span>
+                    <span class="stat-label">Links Created</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" data-target="180000000">0</span>
+                    <span class="stat-label">Total Clicks</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" data-target="50000">0</span>
+                    <span class="stat-label">Happy Users</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" data-target="99">0</span>
+                    <span class="stat-suffix">%</span>
+                    <span class="stat-label">Uptime</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRICING -->
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <h2 class="section-title">Simple <span class="gradient-text">Pricing</span></h2>
+            <p class="section-subtitle">Start free. Scale as you grow.</p>
+            <div class="pricing-grid">
+                <div class="price-card">
+                    <h3>Free</h3>
+                    <div class="price">$0<span>/mo</span></div>
+                    <ul>
+                        <li>✓ 50 links/month</li>
+                        <li>✓ Basic analytics</li>
+                        <li>✓ QR codes</li>
+                        <li>✗ Custom domains</li>
+                    </ul>
+                    <button class="btn btn-outline">Get Started</button>
+                </div>
+                <div class="price-card featured">
+                    <div class="popular-badge">Most Popular</div>
+                    <h3>Pro</h3>
+                    <div class="price">$9<span>/mo</span></div>
+                    <ul>
+                        <li>✓ Unlimited links</li>
+                        <li>✓ Advanced analytics</li>
+                        <li>✓ Custom domains</li>
+                        <li>✓ API access</li>
+                    </ul>
+                    <button class="btn btn-primary">Start Free Trial</button>
+                </div>
+                <div class="price-card">
+                    <h3>Enterprise</h3>
+                    <div class="price">$49<span>/mo</span></div>
+                    <ul>
+                        <li>✓ Everything in Pro</li>
+                        <li>✓ Team management</li>
+                        <li>✓ SSO & SAML</li>
+                        <li>✓ Priority support</li>
+                    </ul>
+                    <button class="btn btn-outline">Contact Sales</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <span class="logo-icon">⚡</span>
+                    <span class="logo-text">LinkSnap</span>
+                    <p>The modern URL shortener for creators, marketers, and developers.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Product</h4>
+                    <a href="#">Features</a>
+                    <a href="#">Pricing</a>
+                    <a href="#">API</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Company</h4>
+                    <a href="#">About</a>
+                    <a href="#">Blog</a>
+                    <a href="#">Careers</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Legal</h4>
+                    <a href="#">Privacy</a>
+                    <a href="#">Terms</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 LinkSnap. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/js/site.js"></script>
+</body>
+</html>
