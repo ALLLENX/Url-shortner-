@@ -64,6 +64,9 @@ app.MapGet("/{code}", async (string code, UrlService service) =>
 
     return Results.Redirect(originalUrl);
 });
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+app.Urls.Add($"http://*:{port}");
+
 app.Run();
 
 public sealed record ShortenRequest(string Url, string? Alias);
