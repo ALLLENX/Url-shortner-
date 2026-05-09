@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using Microsoft.Data.Sqlite;
 
@@ -5,7 +6,6 @@ public class UrlService
 {
     private static readonly Regex AliasRegex = new("^[a-zA-Z0-9_-]{3,30}$", RegexOptions.Compiled);
     private readonly string _connectionString;
-    private readonly Random _random = new();
     private const string CodeChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
     public UrlService(IConfiguration configuration)
@@ -173,7 +173,7 @@ public class UrlService
         var buffer = new char[length];
         for (var i = 0; i < length; i++)
         {
-            buffer[i] = CodeChars[_random.Next(CodeChars.Length)];
+            buffer[i] = CodeChars[RandomNumberGenerator.GetInt32(CodeChars.Length)];
         }
 
         return new string(buffer);

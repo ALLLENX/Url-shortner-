@@ -1,9 +1,24 @@
+using Microsoft.AspNetCore.HttpOverrides;
+
 var builder = WebApplication.CreateBuilder(args);
+
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddSingleton<UrlService>();
 var app = builder.Build();
+
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor |
+                       ForwardedHeaders.XForwardedHost |
+                       ForwardedHeaders.XForwardedProto,
+    ForwardLimit = null,
+    KnownIPNetworks = { },
+    KnownProxies = { }
+});
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -23,6 +38,7 @@ app.MapStaticAssets();
 app.MapRazorPages()
    .WithStaticAssets();
 
+app.MapGet("/health", () => Results.Ok("Healthy"));
 
 app.MapPost("/shorten", async (ShortenRequest request, UrlService service, HttpContext context) =>
 {
@@ -54,7 +70,7 @@ app.MapGet("/api/links/recent", async (UrlService service, HttpContext context) 
     return Results.Ok(response);
 });
 
-app.MapGet("/{code}", async (string code, UrlService service) =>
+app.MapGet("/{code:regex(^[a-zA-Z0-9_-]{{3,30}}$)}", async (string code, UrlService service) =>
 {
     var originalUrl = await service.GetOriginalUrlAsync(code);
     if (string.IsNullOrWhiteSpace(originalUrl))
@@ -64,8 +80,6 @@ app.MapGet("/{code}", async (string code, UrlService service) =>
 
     return Results.Redirect(originalUrl);
 });
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-app.Urls.Add($"http://*:{port}");
 
 app.Run();
 

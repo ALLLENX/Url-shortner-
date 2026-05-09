@@ -1,0 +1,12 @@
+.vs/
+bin/
+obj/
+temp_build_output/
+Properties/PublishProfiles/
+
+Data/*.db
+Data/*.db-*
+
+*.user
+*.lscache
+dotnet-tools.json

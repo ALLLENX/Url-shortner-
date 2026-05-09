@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: url-shortener
+    runtime: docker
+    plan: starter
+    healthCheckPath: /health
+    envVars:
+      - key: ConnectionStrings__UrlShortener
+        value: Data Source=/app/Data/links.db
+    disk:
+      name: url-shortener-data
+      mountPath: /app/Data
+      sizeGB: 1

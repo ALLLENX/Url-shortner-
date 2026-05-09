@@ -1,0 +1,11 @@
+**/.git
+**/.vs
+**/bin
+**/obj
+**/Data/*.db
+**/Data/*.db-*
+**/*.user
+**/*.lscache
+**/Properties/PublishProfiles
+temp_build_output
+dotnet-tools.json
